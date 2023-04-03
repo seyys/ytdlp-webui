@@ -1,0 +1,72 @@
+:root {
+    font-size: x-large;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+input,
+textarea,
+option,
+select {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: medium;
+}
+
+.textinput {
+    display: flex;
+    justify-content: center;
+}
+
+body {
+    display: flex;
+    margin: 0;
+    height: 100vh;
+    width: 100vw;
+    align-items: center;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+body>strong {
+    padding: 10px;
+    font-size: medium;
+}
+
+.inputs {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+}
+
+.inputRow {
+    display: contents;
+}
+
+.item {
+    display: flex;
+    text-align: right;
+    align-items: center;
+    justify-content: right;
+}
+
+.submit {
+    display: flex;
+    margin-top: 1em;
+    justify-content: center;
+    width: 100%;
+}
+
+.submit>input {
+    padding: 0.5em;
+    width: 100%;
+}
+
+.stdout {
+    display: flex;
+    height: calc(100% - 10px);
+    width: calc(100% - 40px);
+    margin: 10px;
+    padding: 10px;
+    border: 2px solid black;
+    overflow-y: auto;
+    font-size: x-small;
+}
