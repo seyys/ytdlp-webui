@@ -1,6 +1,5 @@
 import subprocess
 import os
-from flask import url_for
 
 
 init = r"""
@@ -16,7 +15,7 @@ init = r"""
 
 def ytdlp(url, directory):
     yield (init)
-    filetemplate = "%(title)s - %(id)s.mkv"
+    filetemplate = os.environ.get("FILENAME_TEMPLATE", "%(title)s - %(id)s.mkv") #%(title)s - %(id)s.mkv
     filename = (
         subprocess.run(
             f'yt-dlp {url} -o "{filetemplate}" --get-filename',
@@ -26,9 +25,8 @@ def ytdlp(url, directory):
         .stdout.decode("utf-8")
         .strip()
     )
-    # filepath = os.path.join(os.environ["VIDEOS_ROOT_FOLDER"], directory, filename)
-    filepath = os.path.join("./", directory, filename)
-    cmd = f'yt-dlp -ciw {url} --add-metadata --embed-subs --write-sub --write-auto-sub --sub-lang en --merge-output-format mkv --convert-subs srt -o "{filepath}"'
+    filepath = os.path.join(os.environ.get("VIDEOS_ROOT_FOLDER", "./"), directory, filename)
+    cmd = f'yt-dlp {url} -o "{filepath}" --config-location "{os.environ.get("CONFIG_FILE_LOCATION", "./yt-dlp.conf")}"'
     yield (f"<strong>{cmd}</strong>")
     yield (f'<div class="stdout">')
     with subprocess.Popen(

@@ -1,0 +1,13 @@
+version: "2.1"
+services:
+  ytdlp-frontend:
+    image: ytdlp-frontend
+    container_name: ytdlp-frontend
+    restart: "unless-stopped"
+    environment:
+      - FILENAME_TEMPLATE=%(title)s - [%(id)s].mkv
+    volumes:
+      - <DOWNLOADS>:/app/downloads
+      - <CONFIG>:/app/config
+    ports:
+      - 5000:5000
