@@ -31,10 +31,21 @@ body>strong {
     font-size: medium;
 }
 
+form {
+    width: 100%
+}
+
+.inputsContainer {
+    display: grid;
+    grid-template-columns: 1fr minmax(400px,fill-content) 1fr;
+    width: 100%;
+}
+
 .inputs {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: min-content 1fr;
     gap: 20px;
+    width: 100%;
 }
 
 .inputRow {

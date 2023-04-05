@@ -1,13 +1,34 @@
-version: "2.1"
+version: "3.0"
 services:
   ytdlp-frontend:
     image: ghcr.io/seyys/ytdlp-frontend:master
     container_name: ytdlp-frontend
     restart: "unless-stopped"
-    environment:
-      - FILENAME_TEMPLATE=%(title)s - [%(id)s].mkv
-    volumes:
-      - <DOWNLOADS>:/app/downloads
-      - <CONFIG>:/app/config
     ports:
       - 5000:5000
+    depends_on: 
+      - redis
+    links:
+      - redis
+
+  redis:
+    image: redis:alpine
+    restart: "unless-stopped"
+    hostname: redis
+
+  celery_worker:
+    image: ghcr.io/seyys/ytdlp-frontend:master
+    command: ["celery", "-A", "make_celery", "worker", "--loglevel", "INFO"]
+    depends_on:
+      - redis
+    restart: "unless-stopped"
+    environment:
+      - FILENAME_TEMPLATE=%(title)s - [%(id)s].mkv
+      - CHMOD=<PERMS>
+      - CHOWN_UID=<UID>
+      - CHOWN_GID=<GID>
+    volumes: 
+      - <DOWNLOADS>:/app/downloads
+      - <CONFIG>:/app/config
+    links:
+      - redis
