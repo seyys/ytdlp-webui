@@ -4,7 +4,7 @@ A simple web UI for downloading videos on a remote PC such as a NAS.
 
 ## Screenshot
 
-
+![screenshot](https://user-images.githubusercontent.com/115355216/230538687-a947e6f6-2d27-4e51-afb6-17d3e799ca4a.png)
 
 ## Usage
 
