@@ -2,8 +2,8 @@ from ytdlp_frontend import create_app
 import os
 import shutil
 
-
-if not os.environ["CONFIG_FILE_LOCATION"] in os.listdir():
-    shutil.copy("/app/ytdlp_frontend/config/yt-dlp.conf", os.environ["CONFIG_FILE_LOCATION"])
+config_location = os.environ.get("CONFIG_FILE_LOCATION", "./ytdlp_frontend/config/yt-dlp.conf")
+if not os.path.exists(config_location):
+    shutil.copy("./ytdlp_frontend/config/yt-dlp.conf", config_location)
 flask_app = create_app()
 celery_app = flask_app.extensions["celery"]

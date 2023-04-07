@@ -47,7 +47,7 @@ def ytdlp(self: Task, url, directory) -> object:
         .strip()
     )
     filepath = os.path.join(filedirectory, filename)
-    cmd = f'yt-dlp {url} -o "{filepath}" --config-location "{os.environ.get("CONFIG_FILE_LOCATION", "./ytdlp_config/config/yt-dlp.conf")}"'
+    cmd = f'yt-dlp {url} -o "{filepath}" --config-location "{os.environ.get("CONFIG_FILE_LOCATION", "./ytdlp_frontend/config/yt-dlp.conf")}"'
     with subprocess.Popen(
         cmd, shell=True, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True
     ) as p:
@@ -55,8 +55,8 @@ def ytdlp(self: Task, url, directory) -> object:
             return
         for line in p.stdout:
             msg.append(line)
-            self.update_state(state="PROGRESS", meta={"message": msg})
-    self.update_state(state="PROGRESS", meta={"message": msg})
+            self.update_state(state="PROGRESS", meta={"filename": filename, "message": msg})
+    self.update_state(state="PROGRESS", meta={"filename": filename, "message": msg})
 
     if chmod != -1:
         [
@@ -65,7 +65,7 @@ def ytdlp(self: Task, url, directory) -> object:
             if f.startswith(".".join(filename.split(".")[:-1]))
         ]
         msg.append(f"chmod {oct(chmod).replace('0o','')}\n") # chmod is in octal
-        self.update_state(state="PROGRESS", meta={"message": msg})
+        self.update_state(state="PROGRESS", meta={"filename": filename, "message": msg})
     if chown_uid >= 0 and chown_gid >= 0:
         [
             os.chown(os.path.join(filedirectory, f), chown_uid, chown_gid)
@@ -73,5 +73,5 @@ def ytdlp(self: Task, url, directory) -> object:
             if f.startswith(".".join(filename.split(".")[:-1]))
         ]
         msg.append(f"chown {chown_uid}:{chown_gid}\n")
-        self.update_state(state="PROGRESS", meta={"message": msg})
-    return {"message": msg}
+        self.update_state(state="PROGRESS", meta={"filename": filename, "message": msg})
+    return {"filename": filename, "message": msg}

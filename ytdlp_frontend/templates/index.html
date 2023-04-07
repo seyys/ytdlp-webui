@@ -6,96 +6,151 @@
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
   <title>yt-dlp frontend</title>
   <script src="{{ url_for('static', filename='choices.min.js') }}"></script>
-  <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function () {
-      new Choices(document.querySelector('#{{ context.dir_field_name }}'), {
-      });
-    })
-  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 
 <body>
-  <form name="ytdlp" action="{{ url_for("task.submit_post") }}" method="post">
-    <fieldset>
+  <div></div>
+  <div>
+    <form name="ytdlp" action="{{ url_for("task.submit_post") }}" method="post">
+      <fieldset>
+        <legend>
+          <h2>yt-dlp frontend</h1>
+        </legend>
+        <div class="inputsContainer">
+          <div></div>
+          <div class="inputs">
+            <label class="inputRow">
+              <div class="item">url</div>
+              <input class="textinput" name="{{ context.url_field_name }}" id="{{ context.url_field_name }}">
+            </label>
+            </label>
+            <label class="inputRow">
+              <div class="item">directory</div>
+              <select class="{{ context.dir_field_name }}" name="{{ context.dir_field_name }}"
+                id="{{ context.dir_field_name }}" list="dirs">
+                {% for dir in context.lsdir %}
+                <option value="{{ dir }}">{{ dir }}</option>
+                {% endfor %}
+              </select>
+            </label>
+          </div>
+          <div></div>
+          <div></div>
+          <div class="submit">
+            <input type="submit" value="submit">
+          </div>
+          <div></div>
+        </div>
+      </fieldset>
+    </form>
+    <div>
+    <fieldset class="downloadsContainer">
       <legend>
-        <h2>yt-dlp frontend</h1>
+        <h2>downloads</h2>
       </legend>
-      <div class="inputsContainer">
-        <div></div>
-        <div class="inputs">
-          <label class="inputRow">
-            <div class="item">url</div>
-            <input class="textinput" name="{{ context.url_field_name }}" id="{{ context.url_field_name }}">
-          </label>
-          </label>
-          <label class="inputRow">
-            <div class="item">directory</div>
-            <select class="{{ context.dir_field_name }}" name="{{ context.dir_field_name }}"
-              id="{{ context.dir_field_name }}" list="dirs">
-              {% for dir in context.lsdir %}
-              <option value="{{ dir }}">{{ dir }}</option>
-              {% endfor %}
-            </select>
-          </label>
+      <!-- https://alvarotrigo.com/blog/html-css-tabs/ number 10-->
+      <div class="tabs tabsContainer" id="tabs">
+        <div class="tabsEmptyPlaceholder">
+          no downloads
         </div>
-        <div></div>
-        <div></div>
-        <div class="submit">
-          <input type="submit" value="submit">
-        </div>
-        <div></div>
       </div>
     </fieldset>
-  </form>
-  <div id="stdout" class="stdout" style="display: none;">
+  </div>
+  <div></div>
   </div>
 
-  <script>
-    const taskForm = (formName, doPoll, report) => {
-      document.forms[formName].addEventListener("submit", (event) => {
-        event.preventDefault()
-        fetch(event.target.action, {
-          method: "POST",
-          body: new FormData(event.target)
-        })
+  <script type="text/javascript">
+    class Tabs {
+      constructor(id) {
+        this.id = id;
+
+        this.idValidName = `a${this.id.replaceAll('-', '')}`; // element id can't start with numeric
+
+        this.container = document.createElement("fieldset");
+
+        this.legend = document.createElement("legend");
+
+        this.input = document.createElement("input");
+        this.input.id = this.idValidName;
+        this.input.type = "checkbox";
+
+        this.label = document.createElement("label");
+        this.label.setAttribute("for", this.idValidName);
+
+        this.labelTitle = document.createElement("div");
+
+        this.progressStatus = document.createElement("div");
+
+        this.content = document.createElement("div");
+        this.content.setAttribute("class", "tab");
+
+        this.closeButton = document.createElement("button");
+        this.closeButton.setAttribute("class", "closeButton")
+
+        this.label.appendChild(this.progressStatus);
+        this.label.appendChild(this.labelTitle);
+        this.label.appendChild(this.closeButton);
+        this.legend.appendChild(this.input);
+        this.legend.appendChild(this.label);
+        this.container.appendChild(this.legend);
+        this.container.appendChild(this.content);
+        document.getElementById("tabs").appendChild(this.container);
+
+        this.closeButton.addEventListener('click', this.remove)
+
+        this.poll();
+      }
+
+      poll = () => {
+        fetch(`/task/result/${this.id}`)
           .then(response => response.json())
           .then(data => {
-            report(null)
+            this.labelTitle.innerHTML = data["value"]?.["filename"] || "Pending...";
+            this.content.innerHTML = data["value"]?.["message"]?.join('<br/>') || '';
+            this.progressStatus.setAttribute(
+              "class", 
+              `${this.idValidName} ${data["ready"] ? (data["successful"] ? 'success' : 'fail') : 'loader'}`
+            );
 
-            const poll = () => {
-              fetch(`/task/result/${data["result_id"]}`)
-                .then(response => response.json())
-                .then(data => {
-                  report(data)
-
-                  if (!data["ready"]) {
-                    setTimeout(poll, 30)
-                  } else if (!data["successful"]) {
-                    console.error(formName, data)
-                  } else if (data["ready"]) {
-                    const el = document.getElementById("stdout")
-                    el.innerHTML += "---------DONE---------"
-                  }
-                })
-            }
-
-            if (doPoll) {
-              poll()
+            if (!data["ready"]) {
+              setTimeout(this.poll, 30);
+            } else if (!data["successful"]) {
+              console.error("ytdlp", data);
+            } else if (data["ready"]) {
+              this.content.innerHTML += "---------DONE---------";
             }
           })
-      })
+      }
+
+      remove = () => {
+        this.container.remove();
+        localStorage.setItem("history", JSON.stringify(
+          JSON.parse(localStorage.getItem("history") || '[]').filter(item => item !== this.id)
+        ))
+      }
     }
 
-    taskForm("ytdlp", true, data => {
-      const el = document.getElementById("stdout")
-      el.style.display = "flex"
+    document.addEventListener("DOMContentLoaded", function () {
+      new Choices(document.querySelector('#{{ context.dir_field_name }}'), {});
+      JSON.parse(localStorage.getItem("history"))?.forEach(tab => new Tabs(tab));
+    })
+  </script>
 
-      if (data !== null && data["value"] !== null && data["value"]["message"] !== null) {
-        el.innerText = data["value"]["message"].join('')
-      } else {
-        el.innerHTML = ''
-      }
+  <script>
+    document.forms["ytdlp"].addEventListener("submit", (event) => {
+      event.preventDefault()
+      fetch(event.target.action, {
+        method: "POST",
+        body: new FormData(event.target)
+      })
+        .then(response => response.json())
+        .then(data => {
+          localStorage.setItem("history", JSON.stringify(
+            [...JSON.parse(localStorage.getItem("history") || '[]'), data["result_id"]]
+          ));
+          new Tabs(data["result_id"]);
+        })
     })
   </script>
 </body>
