@@ -14,8 +14,8 @@ A simple web UI for downloading videos on a remote PC such as a NAS.
 version: "3.0"
 services:
   ytdlp-webui:
-    image: ghcr.io/seyys/ytdlp-frontend:master
-    container_name: ytdlp-frontend
+    image: ghcr.io/seyys/ytdlp-selfhosted-webui:master
+    container_name: ytdlp-webui
     restart: "unless-stopped"
     volumes:
       - <DOWNLOADS>:/app/downloads
@@ -32,7 +32,7 @@ services:
     hostname: redis
 
   celery_worker:
-    image: ghcr.io/seyys/ytdlp-frontend:master
+    image: ghcr.io/seyys/ytdlp-selfhosted-webui:master
     command: ["celery", "-A", "make_celery", "worker", "--loglevel", "INFO"]
     depends_on:
       - redis
