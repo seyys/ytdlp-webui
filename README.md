@@ -1,3 +1,16 @@
+# Web UI for self-hosted yt-dlp
+
+A simple web UI for downloading videos on a remote PC such as a NAS.
+
+## Screenshot
+
+
+
+## Usage
+
+### Docker Compose
+
+```yaml
 version: "3.0"
 services:
   ytdlp-webui:
@@ -34,3 +47,16 @@ services:
       - <CONFIG>:/app/config
     links:
       - redis
+```
+
+### Configuration
+
+Edit `yt-dlp.conf` in the `<CONFIG>` directory. Refer to the [yt-dlp options](https://github.com/yt-dlp/yt-dlp#usage-and-options).
+
+## Running locally
+
+Clone this repo, install pip requirements, then run
+
+```bash
+redis-server & REDIS_URL=redis://localhost celery -A make_celery worker --loglevel INFO & REDIS_URL=redis://localhost flask --app ytdlp_frontend run
+```
