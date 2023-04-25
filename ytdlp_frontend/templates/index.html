@@ -67,9 +67,11 @@
 
         this.idValidName = `a${this.id.replaceAll('-', '')}`; // element id can't start with numeric
 
-        this.container = document.createElement("fieldset");
+        this.container = document.createElement("div");
+        this.container.setAttribute("class", "container");
 
-        this.legend = document.createElement("legend");
+        this.title = document.createElement("div");
+        this.title.setAttribute("class", "video-title");
 
         this.input = document.createElement("input");
         this.input.id = this.idValidName;
@@ -91,10 +93,10 @@
         this.label.appendChild(this.progressStatus);
         this.label.appendChild(this.labelTitle);
         this.label.appendChild(this.closeButton);
-        this.legend.appendChild(this.input);
-        this.legend.appendChild(this.label);
-        this.container.appendChild(this.legend);
+        this.title.appendChild(this.label);
+        this.container.appendChild(this.title);
         this.container.appendChild(this.content);
+        document.getElementById("tabs").appendChild(this.input);
         document.getElementById("tabs").appendChild(this.container);
 
         this.closeButton.addEventListener('click', this.remove)
@@ -118,7 +120,7 @@
             } else if (!data["successful"]) {
               console.error("ytdlp", data);
             } else if (data["ready"]) {
-              this.content.innerHTML += "---------DONE---------";
+              this.content.innerHTML += "<br/>---------DONE---------";
             }
           })
       }

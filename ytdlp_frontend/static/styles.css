@@ -123,6 +123,7 @@ form {
   display: flex;
   flex-direction: column;
   width: 100%;
+  gap: 10px;
 }
 .tabs label {
   display: grid;
@@ -132,43 +133,40 @@ form {
   font-weight: bold;
   background-color: white;
   transition: background ease 0.2s;
-  margin: 5px;
   cursor: pointer;
   font-size: large;
   border: 1px black solid;
 }
 .tabs label:hover,
-.tabs input[type="checkbox"]:checked + label {
+.tabs input[type="checkbox"]:checked + .container label {
+  border: 1px white solid;
   filter: invert();
-}
-.tabs legend {
-  width: 100%;
+  transition: background ease 0.2s;
 }
 .tabs .tab {
-  flex-grow: 1;
-  width: 80%;
   display: none;
   /* padding: 1rem; */
   background: #fff;
   font-size: x-small;
+  padding: 5px;
+  border: 1px solid black;
 }
-.tabs fieldset {
+.tabs .container {
   margin: 0;
 }
 .tabs input[type="checkbox"] {
   display: none;
 }
-.tabs fieldset:has(input[type="checkbox"]:not(:checked)) {
-  border: solid 2px transparent;
+.tabs input[type="checkbox"]:not(:checked) + .container {
   padding-top: 0px;
   padding-bottom: 0px;
   border-top: none;
   border-bottom: none;
 }
-.tabs input[type="checkbox"]:checked + label {
+.tabs input[type="checkbox"]:checked + .container label {
   background: #fff;
 }
-.tabs legend:has(input[type="checkbox"]:checked + label) + .tab {
+.tabs input[type="checkbox"]:checked + .container > .video-title + .tab {
   display: block;
 }
 
@@ -178,7 +176,6 @@ form {
     order: initial;
   }
   .tabs label {
-    width: 100%;
     margin-right: 0;
     margin-top: 0.2rem;
   }
