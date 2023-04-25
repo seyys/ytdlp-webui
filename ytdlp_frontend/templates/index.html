@@ -116,7 +116,7 @@
             );
 
             if (!data["ready"]) {
-              setTimeout(this.poll, 30);
+              setTimeout(this.poll, 200);
             } else if (!data["successful"]) {
               console.error("ytdlp", data);
             } else if (data["ready"]) {
