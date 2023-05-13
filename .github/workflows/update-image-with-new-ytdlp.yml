@@ -1,0 +1,78 @@
+name: Rebuild image when yt-dlp is updated
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  check-update:
+  
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.check_update.outputs.is_updated }}
+
+    steps:
+    - name: Check update
+      id: check_update
+      run: |
+        # Get yesterday's date
+        YESTERDAY_DATE=$(date +%Y-%m-%d --date='yesterday')
+
+        # Get latest release date
+        RELEASE_DATE=$(curl -s https://pkgs.alpinelinux.org/package/edge/community/x86/yt-dlp | grep -A 1 '<th class="header">Build time</th>' | grep -Po '(?<=<td>)[^\ ]+')
+        
+        # Compare release date with yesterday's date
+        echo "$YESTERDAY_DATE: yt-dlp last built on $RELEASE_DATE."
+        if [[ "$RELEASE_DATE" == "$YESTERDAY_DATE" ]]; then
+          echo "yt-dlp updated yesterday."
+          echo "is_updated=true" >> $GITHUB_OUTPUT
+        else
+          echo "yt-dlp not updated yesterday."
+          echo "is_updated=false" >> $GITHUB_OUTPUT
+        fi
+
+  rebuild-image:
+
+    needs: check-update
+    if: needs.check-update.outputs.status == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v3
+      name: Checkout repository
+      
+    - name: Log in to the Container registry
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+  
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=sha
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
