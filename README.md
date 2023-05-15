@@ -60,3 +60,6 @@ Clone this repo, install pip requirements, then run
 ```bash
 redis-server & REDIS_URL=redis://localhost celery -A make_celery worker --loglevel INFO & REDIS_URL=redis://localhost flask --app ytdlp_frontend run
 ```
+
+## To-do
+- Add support for batch downloads
