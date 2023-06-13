@@ -3,7 +3,7 @@
 }
 
 form * {
-    font-size: x-large;
+    font-size: large;
 }
 
 input,
@@ -33,13 +33,17 @@ body>strong {
     font-size: medium;
 }
 
+body>div {
+    width: 100%;
+}
+
 form {
     width: 100%
 }
 
 .inputsContainer {
     display: grid;
-    grid-template-columns: 1fr minmax(400px,fill-content) 1fr;
+    grid-template-columns: 1fr minmax(240px,fill-content) 1fr;
     width: 100%;
 }
 
