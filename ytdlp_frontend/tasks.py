@@ -47,7 +47,7 @@ def ytdlp(self: Task, url, directory) -> object:
         .strip()
     )
     filepath = os.path.join(filedirectory, filename)
-    cmd = f'yt-dlp {url} -o "{filepath}" --config-location "{os.environ.get("CONFIG_FILE_LOCATION", "./ytdlp_frontend/config/yt-dlp.conf")}"'
+    cmd = f'yt-dlp "{url}" -o "{filepath}" --config-location "{os.environ.get("CONFIG_FILE_LOCATION", "./ytdlp_frontend/config/yt-dlp.conf")}"'
     with subprocess.Popen(
         cmd, shell=True, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True
     ) as p:

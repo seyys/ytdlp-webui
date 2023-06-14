@@ -15,7 +15,7 @@
     <form name="ytdlp" action="{{ url_for("task.submit_post") }}" method="post">
       <fieldset>
         <legend>
-          <h2>yt-dlp</h1>
+          <h2>yt-dlp</h2>
         </legend>
         <div class="inputsContainer">
           <div></div>
@@ -23,7 +23,6 @@
             <label class="inputRow">
               <div class="item">url</div>
               <input class="textinput" name="{{ context.url_field_name }}" id="{{ context.url_field_name }}">
-            </label>
             </label>
             <label class="inputRow">
               <div class="item">directory</div>
@@ -126,6 +125,7 @@
       }
 
       remove = () => {
+        this.input.remove();
         this.container.remove();
         localStorage.setItem("history", JSON.stringify(
           JSON.parse(localStorage.getItem("history") || '[]').filter(item => item !== this.id)
@@ -141,7 +141,8 @@
 
   <script>
     document.forms["ytdlp"].addEventListener("submit", (event) => {
-      event.preventDefault()
+      event.preventDefault();
+      if (document.getElementById('{{ context.url_field_name }}').value === "") return;
       fetch(event.target.action, {
         method: "POST",
         body: new FormData(event.target)
