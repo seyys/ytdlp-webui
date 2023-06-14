@@ -39,7 +39,7 @@ def ytdlp(self: Task, url, directory) -> object:
     filetemplate = os.environ.get("FILENAME_TEMPLATE", "%(title)s - %(id)s.mkv")
     filename = (
         subprocess.run(
-            f'yt-dlp {url} -o "{filetemplate}" --get-filename',
+            f'yt-dlp "{url}" -o "{filetemplate}" --get-filename',
             shell=True,
             stdout=subprocess.PIPE,
         )
