@@ -154,6 +154,8 @@ form {
   font-size: x-small;
   padding: 5px;
   border: 1px solid black;
+  max-height: 40vh;
+  overflow-y: auto;
 }
 .tabs .container {
   margin: 0;
