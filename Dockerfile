@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN pip install -r requirements.txt
+RUN apk add yt-dlp ffmpeg musl-dev gcc file build-base
 
-RUN apk add yt-dlp ffmpeg
+RUN pip install -r requirements.txt
 
 RUN mkdir -p /app/config
 
