@@ -3,3 +3,4 @@ gevent==22.10.2
 gunicorn==20.1.0
 celery==5.2.7
 redis[hiredis]==4.5.4
+Werkzeug==2.2.3
